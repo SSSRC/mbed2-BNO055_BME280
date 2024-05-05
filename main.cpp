@@ -2,6 +2,11 @@
 
 #include "BNO055.h"
 #include "BME280.h"
+#include <cstdio>
+
+Ticker peakchecktime;
+
+void peakcheck();
 
 //PCへのシリアル通信
 Serial pc(USBTX, USBRX, 9600);
@@ -16,10 +21,21 @@ I2C ifaceI2C(I2C_SDA, I2C_SCL);
 BOARDC_BNO055 sensor1(&ifaceI2C);
 BOARDC_BME280 sensor2(&ifaceI2C);
 
-int main(){
+DigitalIn M2S(PA_8);
+DigitalOut S2M(PA_11);
 
-    //挨拶表示
-    printf("mbed READY\r\n");
+double bme280_P = 0.0;
+double bme280_T = 0.0;
+//double height = ((pow(1013.25/bme280_P , 1/5.257)-1)*(bme280_T+273.15))/0.0065;
+double previous_height = 0.0;
+//double n = height-previous_height;//相対高度 
+int m = 0;//相対高度が連続して負になった回数
+
+int main(){ 
+
+    peakchecktime.attach(peakcheck,0.1);//頂点検知判定を行う,100Hz(CORE参照)
+
+    printf("mbed READY\r\n");//挨拶表示
 
     wait_ms(1000);
     led = 1;
@@ -83,7 +99,7 @@ int main(){
     float scAcc, scMag, scGyro, scEUL, scTemp;
     float ax, ay, az, mx, my, mz, gx, gy, gz, temp;
     double yaw, roll, pitch;
-    float bme280_T = 0.0, bme280_P = 0.0, bme280_H = 0.0;
+    float /*bme280_T = 0.0, bme280_P = 0.0,*/ bme280_H = 0.0;
     char bme280_status = 0x00;
 
     //センサーのRAW値を実際の数値に変換するための倍率を取得する
@@ -92,6 +108,7 @@ int main(){
     scGyro = sensor1.getGyroScale();
     scEUL = sensor1.getEulerScale();
     scTemp = sensor1.getTempScale();
+
 
     //ボタンが押されるまで繰り返し続ける(Nucleo専用)
     //ボタンがない場合はwhile(1)の無限ループで代用
@@ -123,7 +140,7 @@ int main(){
         bme280_P = sensor2.getPress_hPa();
         bme280_H = sensor2.getHum();
         bme280_status = sensor2.getStatus();
-
+/*
         //温湿度センサーの補正データが更新されていたなら、計算用数値を更新
         if(sensor2.isReady()){
             sensor2.updateCalib();
@@ -140,26 +157,25 @@ int main(){
             "Temperature\t = %03.3f[degC] (BNO055 -> %03.3f[degC])\r\nPressure\t = %06.3f[hPa]\r\nHumidity\t = %03.3f[%%RH]\r\nStatus\t = 0x%02X\r\n",
             bme280_T, temp, bme280_P, bme280_H, bme280_status
         );
-         
-        double height = (pow(1013.25/bme280_P , 1/5.257)-1)*(bme280_T+273.15)/0.0065;
-        printf("Pressure\t = %06.3f[hPa]\r\nHeight\t = %06.3f[m]\r\n",bme280_P,height);
-        wait_ms(10);
-        
-        /*double previous_height = 0;
-        int n=0, m=0;
-        n=height-previous_height;
-        for(int i=0;i<100000;i++){
-            if(n<0){
-                m++;
-            }
-            else{
-                m=0;
-            }
-            if(m==5){
-                printf("相対高度が５回負");
-            }
-            previous_height=height;
-            //wait_ms(10);
-        }*/
+*/
     }
+}
+
+void peakcheck(){
+    double height = ((pow(1013.25/bme280_P , 1/5.257)-1)*(bme280_T+273.15))/0.0065;//外に出すとinfと表示される。原因は謎
+    int n= (height-previous_height)*1;//相対高度 
+    printf("m=%d\r\nPressure=%f\r\nTemperature=%f\r\nHeight=%f[m]\r\nn=%d\r\n",m,bme280_P,bme280_T,height,n);
+    //printf("m=%d\r\npow(1013.25/bme280_p , 1/5.257)=%f\r\n(pow(1013.25/bme_280_P , 1/5.257)-1)*(bme280_T+273.15)=%f\r\n(pow(1013.25/bme_280_P , 1/5.257)-1)*(bme280_T+273.15)/0.0065=%f\r\nheight=%f\r\n",m,pow(1013.25/bme280_P , 1/5.257),(pow(1013.25/bme280_P , 1/5.257)-1)*(bme280_T+273.15),((pow(1013.25/bme280_P , 1/5.257)-1)*(bme280_T+273.15))/0.0065,height);
+    if(n<0){
+        m++;
+    }
+    else{
+        m=0;//カウントリセット
+    }
+    if(m==5){
+        S2M = 1;//頂点検知をsubからmainへ送る
+        peakchecktime.detach();
+        printf("頂点検知成功\n");
+    }
+    previous_height = height;
 }
