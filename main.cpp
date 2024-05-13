@@ -140,9 +140,10 @@ int main(){
         bme280_P = sensor2.getPress_hPa();
         bme280_H = sensor2.getHum();
         bme280_status = sensor2.getStatus();
+
 /*
         //温湿度センサーの補正データが更新されていたなら、計算用数値を更新
-        if(sensor2.isReady()){
+        *if(sensor2.isReady()){
             sensor2.updateCalib();
         }
 
@@ -163,9 +164,15 @@ int main(){
 
 void peakcheck(){
     double height = ((pow(1013.25/bme280_P , 1/5.257)-1)*(bme280_T+273.15))/0.0065;//外に出すとinfと表示される。原因は謎
-    int n= (height-previous_height)*1;//相対高度 
-    printf("m=%d\r\nPressure=%f\r\nTemperature=%f\r\nHeight=%f[m]\r\nn=%d\r\n",m,bme280_P,bme280_T,height,n);
-    //printf("m=%d\r\npow(1013.25/bme280_p , 1/5.257)=%f\r\n(pow(1013.25/bme_280_P , 1/5.257)-1)*(bme280_T+273.15)=%f\r\n(pow(1013.25/bme_280_P , 1/5.257)-1)*(bme280_T+273.15)/0.0065=%f\r\nheight=%f\r\n",m,pow(1013.25/bme280_P , 1/5.257),(pow(1013.25/bme280_P , 1/5.257)-1)*(bme280_T+273.15),((pow(1013.25/bme280_P , 1/5.257)-1)*(bme280_T+273.15))/0.0065,height);
+    double n= height-previous_height;//相対高度 
+    //printf("m=%d\r\nPressure=%f\r\nTemperature=%f\r\nHeight=%f[m]\r\nPrevious_height=%f\r\nn=%f\r\n",m,bme280_P,bme280_T,height,previous_height,n);
+    //printf("m=f%d\r\npow(1013.25/bme280_p , 1/5.257)=%f\r\n(pow(1013.25/bme_280_P , 1/5.257)-1)*(bme280_T+273.15)=%f\r\n(pow(1013.25/bme_280_P , 1/5.257)-1)*(bme280_T+273.15)/0.0065=%f\r\nheight=%f\r\n",m,pow(1013.25/bme280_P , 1/5.257),(pow(1013.25/bme280_P , 1/5.257)-1)*(bme280_T+273.15),((pow(1013.25/bme280_P , 1/5.257)-1)*(bme280_T+273.15))/0.0065,height);
+    printf("pressure=%f\r\n",bme280_P);
+    printf("temperature=%f\r\n",bme280_T);
+    printf("height=%f\r\n",height);
+    //printf("previous_height=%f\r\n",previous_height);
+    printf("n=%f\r\n",n);
+    //printf("m=%d\r\n",m);
     if(n<0){
         m++;
     }
