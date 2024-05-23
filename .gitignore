@@ -6,3 +6,4 @@ compile_commands.json
 mbed
 BOARDC_BME280
 BOARDC_BNO055
+SDFileSystem
