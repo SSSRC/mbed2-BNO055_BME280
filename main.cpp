@@ -6,7 +6,7 @@
 
 Ticker peakchecktime;
 
-void peakcheck();
+//void peakcheck();
 
 //PCへのシリアル通信
 Serial pc(USBTX, USBRX, 9600);
@@ -24,16 +24,18 @@ BOARDC_BME280 sensor2(&ifaceI2C);
 DigitalIn M2S(PA_8);
 DigitalOut S2M(PA_11);
 
+/*
 double bme280_P = 0.0;
 double bme280_T = 0.0;
 //double height = ((pow(1013.25/bme280_P , 1/5.257)-1)*(bme280_T+273.15))/0.0065;
 double previous_height = 0.0;
 //double n = height-previous_height;//相対高度 
 int m = 0;//相対高度が連続して負になった回数
+*/
 
 int main(){ 
 
-    peakchecktime.attach(peakcheck,0.1);//頂点検知判定を行う,100Hz(CORE参照)
+   // peakchecktime.attach(peakcheck,0.2);//頂点検知判定を行う,100Hz(CORE参照)
 
     printf("mbed READY\r\n");//挨拶表示
 
@@ -89,8 +91,8 @@ int main(){
 
         printf("BME280 (Temperature, Humidity, Pressure sensor) -- ---- ---- ----\r\n");
         printf("CTRL_HUM = 0x%02X, CTRL_MEAS = 0x%02X, CONFIG = 0x%02X\r\n\r\n", bme280mode_hum, bme280mode_meas, bme280mode_conf);
-    }*/
-
+    }
+*/
     wait_ms(1000);
     led = 1;
 
@@ -99,7 +101,7 @@ int main(){
     float scAcc, scMag, scGyro, scEUL, scTemp;
     float ax, ay, az, mx, my, mz, gx, gy, gz, temp;
     double yaw, roll, pitch;
-    float /*bme280_T = 0.0, bme280_P = 0.0,*/ bme280_H = 0.0;
+    float bme280_T = 0.0, bme280_P = 0.0, bme280_H = 0.0;
     char bme280_status = 0x00;
 
     //センサーのRAW値を実際の数値に変換するための倍率を取得する
@@ -141,9 +143,9 @@ int main(){
         bme280_H = sensor2.getHum();
         bme280_status = sensor2.getStatus();
 
-/*
+
         //温湿度センサーの補正データが更新されていたなら、計算用数値を更新
-        *if(sensor2.isReady()){
+        if(sensor2.isReady()){
             sensor2.updateCalib();
         }
 
@@ -158,10 +160,10 @@ int main(){
             "Temperature\t = %03.3f[degC] (BNO055 -> %03.3f[degC])\r\nPressure\t = %06.3f[hPa]\r\nHumidity\t = %03.3f[%%RH]\r\nStatus\t = 0x%02X\r\n",
             bme280_T, temp, bme280_P, bme280_H, bme280_status
         );
-*/
+
     }
 }
-
+/*
 void peakcheck(){
     double height = ((pow(1013.25/bme280_P , 1/5.257)-1)*(bme280_T+273.15))/0.0065;//外に出すとinfと表示される。原因は謎
     double n=height-previous_height;//相対高度 
@@ -190,3 +192,4 @@ void peakcheck(){
     }
     previous_height = height;
 }
+*/
