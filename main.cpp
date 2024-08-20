@@ -124,7 +124,7 @@ int main() {
                     }
                 }
                 fclose(fp); 
-
+                /*
                 //.txtファイル読み込み
                 fp = fopen("/sd/mydir100/sdtest.txt", "r");
                 if(fp == NULL) {
@@ -136,6 +136,7 @@ int main() {
                     pc.printf("%s", buffer);
                 }
                 fclose(fp); 
+                */
             
         }  
     }
