@@ -140,7 +140,7 @@ int main() {
     }
 }
 
-
+//以下，頂点検知の割り込み
 void peakcheck(){
     double height = ((pow(1013.25/bme280_P , 1/5.257)-1)*(bme280_T+273.15))/0.0065;//外に出すとinfと表示される。原因は謎
     double n=height-previous_height;//相対高度 
