@@ -73,7 +73,7 @@ int main() {
             sensor2.updateCalib();
         }
         //printf("Acc = X[%06.5f], Y[%06.5f], Z[%06.5f]\r\nMag = X[%06.5f], Y[%06.5f], Z[%06.5f]\r\n",ax, ay, az, mx, my, mz);
-
+        printf("Acc = X[%06.5f], Y[%06.5f], Z[%06.5f]\r\n",ax, ay, az);
         printf("pitch= %lf roll= %lf yaw= %lf\r\n",roll,pitch,yaw);//yawの所がrollになっている
         fprintf(fp,"pitch= %lf roll= %lf yaw= %lf\r\n",roll,pitch,yaw);
         //printf("Temperature\t = %03.3f[degC] (BNO055 -> %03.3f[degC])\r\nPressure\t = %06.3f[hPa]\r\nHumidity\t = %03.3f[%%RH]\r\nStatus\t = 0x%02X\r\n",bme280_T, temp, bme280_P, bme280_H, bme280_status);
@@ -81,10 +81,10 @@ int main() {
         //fprintf(fp,"Acc = X[%06.5f], Y[%06.5f], Z[%06.5f]\r\nMag = X[%06.5f], Y[%06.5f], Z[%06.5f]\r\n pitch= %lf roll= %lf yaw= %lf\r\nTemperature\t = %03.3f[degC] (BNO055 -> %03.3f[degC])\r\nPressure\t = %06.3f[hPa]\r\nHumidity\t = %03.3f[%%RH]\r\nStatus\t = 0x%02X\r\n",ax, ay, az, mx, my, mz,roll,pitch,yaw,bme280_T, temp, bme280_P, bme280_H, bme280_status);
         
         //線形加速度を取得//線形加速度は重力の影響が除去されており、デバイスの運動を知りたいときに見るらしい？
-        sensor1.getLinearAccDataAll(L_accX, L_accY, L_accZ);
+        //sensor1.getLinearAccDataAll(L_accX, L_accY, L_accZ);
 
-        printf("Acc = X[%06.5f], Y[%06.5f], Z[%06.5f]\r\n",L_accX, L_accY, L_accZ);
-        fprintf(fp,"Acc = X[%06.5f], Y[%06.5f], Z[%06.5f]\r\n",L_accX, L_accY, L_accZ);
+        //printf("Acc = X[%06.5f], Y[%06.5f], Z[%06.5f]\r\n",L_accX, L_accY, L_accZ);
+        //fprintf(fp,"Acc = X[%06.5f], Y[%06.5f], Z[%06.5f]\r\n",L_accX, L_accY, L_accZ);
         time = t.read();
     }
     fclose(fp); 
