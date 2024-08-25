@@ -14,7 +14,6 @@ I2C ifaceI2C(I2C_SDA, I2C_SCL);
 BOARDC_BNO055 sensor1(&ifaceI2C);
 BOARDC_BME280 sensor2(&ifaceI2C);
 
-
 Timer t;
 
 int main() {
